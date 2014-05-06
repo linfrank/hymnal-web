@@ -41,26 +41,24 @@ function makeMeter(meter){
 }
 
 function makeSection(sect){
-  var style = sect.chorus? 'hymn-chorus' : 'hymn-verse';
-  var s = '<div class="row hymn-section">';
-  s += '<div class="col-xs-1">';
+  var s = '<div class="hymn-section">';
+  s += '<div class="hymn-verse-number">';
   if (!sect.chorus && sect.stanza > 0){
-    s += '<p>' + sect.stanza + '</p>';
+    s += sect.stanza;
   }
   s += '</div>';
-  s += '<div class="col-xs-11">';
-  s += '<p class="'+style+'">';
+  var style = sect.chorus? 'hymn-chorus' : 'hymn-verse';
+  s += '<div class="' + style + '">';
   for (var i = 0; i < sect.lines.length; i++){
-    s += sect.lines[i] + '<br/>';
+    s += '<p>' + sect.lines[i] + '</p>';
   }
-  s += '</p>';
-  s += '</div>';  
+  s += '</div>';
   s += '</div>';
   return s;
 }
 
 function makeSong(song){
-  var s = '<div class="row hymn-song">';
+  var s = '<div class="hymn-song">';
   for (var i = 0; i < song.length; i++){
     s += makeSection(song[i]);
   }
@@ -70,7 +68,7 @@ function makeSong(song){
 
 function makeNote(note){
   if (valid(note)){
-    return '<div class="hymn-note"><p>'+note+'</p></div>';
+    return '<div class="hymn-note">'+note+'</div>';
   }
   else{
     return '';
@@ -78,44 +76,40 @@ function makeNote(note){
 }
 
 function makeAuthors(type, authors){
-  //console.log(type+"/"+authors);
-  var s = '<div class="row">';
-  s += '<div class="col-sm-4">';
-  s += '<p class="hymn-author-type">'+type;
-  if (authors.length > 1) s += 's';
-  s += ':</p>';
+  var s = '<div class="row hymn-author">';
+  s += '<div class="col-xs-6 hymn-author-type">';
+  s += type;
   s += '</div>';
-  s += '<div class="col-sm-8"><p class="hymn-author-name">';
+  s += '<div class="col-xs-6 hymn-author-name">';
   for (var i = 0; i < authors.length; i++){
     s += authors[i] + '<br/>';
   }
-  s += '</p></div>';
+  s += '</div>';
   s += '</div>';
   return s;
 }
 
 function makeAuthorship(hymn){
 
-  var n = 0;
-  if (valid(hymn.writers)) n++;
-  if (valid(hymn.composers)) n++;
+  var hasWriters = valid(hymn.writers) && hymn.writers.length > 0;
+  var hasComposers = valid(hymn.composers) && hymn.composers.length > 0;
 
   var s = '';
-  if (n < 1) return s;
+  if (!hasWriters && !hasComposers) return s;
 
-  s += '<div class="row hymn-author">';
+  s += '<div class="row hymn-authorship">';
 
-  if (n > 1){
+  if (hasWriters && hasComposers){
     s += '<div class="col-md-6">';
-    s += makeAuthors("Writer", hymn.writers);
+    s += makeAuthors("Lyrics", hymn.writers);
     s += '</div>';
     s += '<div class="col-md-6">';
-    s += makeAuthors("Composer", hymn.composers);
+    s += makeAuthors("Music", hymn.composers);
     s += '</div>';
   }
   else{
-    var type = valid(hymn.writers)? "Writer" : "Composer";
-    var authors = valid(hymn.writers)? hymn.writers : hymn.composers;
+    var type = hasWriters? "Lyrics" : "Music";
+    var authors = hasWriters? hymn.writers : hymn.composers;
     s += '<div class="col-md-6 col-md-offset-3">';
     s += makeAuthors(type, authors);
     s += '</div>';
@@ -132,7 +126,6 @@ function makePage(hymn){
   s += makeMeter(getMeter(hymn));
   s += makeSong(hymn.song);
   if (valid(hymn.note)) s += makeNote(hymn.note);
-  s += '<hr/>';
   s += makeAuthorship(hymn);
   return s;
 }

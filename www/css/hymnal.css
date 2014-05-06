@@ -13,12 +13,25 @@ body {
 
 .navbar-default-hymn {
   background-color: #e5e5c7;
-  border: none;
   margin-bottom: 0;
+  border: none;
   /*box-shadow: 0px 0px 3px 0px;*/
 }
 
 .navbar-toggle-hymn {
+  border: none;
+}
+
+.navbar-default-hymn .navbar-toggle-hymn:hover,
+.navbar-default-hymn .navbar-toggle-hymn:focus {
+  background-color: #dedebc;
+}
+
+.navbar-default-hymn .navbar-collapse-hymn {
+  border: none;
+}
+
+.navbar-default-hymn .navbar-form-hymn {
   border: none;
 }
 
@@ -28,29 +41,39 @@ body {
 
 /* Hymnal components */
 
+#hymn-greeting {
+  font-size: 300%;
+  font-variant: small-caps;
+  text-align: center;
+  margin-top: 3em;
+}
+
 #hymn-page {
   margin-top: 0.5em;
   /*margin-top: calc(1em + 70px); /* 70px for fixed navbar */
-  margin-bottom: 2em;
+  margin-bottom: 1em;
 }
 
 #book-name {
-  font-family: sans-serif;
   font-variant: small-caps;
 }
 
 #book-number {
-  font-family: sans-serif;
   font-size: 90%;
   margin-left: auto;
   margin-right: auto;
+}
+
+#number-search-input {
+  max-width: 10em;
 }
 
 .hymn-category {
   margin-left: 1.5em;
   margin-right: 1.5em;
   text-align: center;
-  font-style: italic;
+  /*font-style: italic;*/
+  font-variant: small-caps;
 }
 
 .hymn-title {
@@ -63,28 +86,39 @@ body {
 .hymn-meter {
   text-align: center;
   font-size: small;
+  margin: 0;
 }
 
 .hymn-song {
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 0.5em;
-  margin-bottom: 3em;
+  display: table;
+  margin: 0 auto 0.75em auto;
   font-size: large;
 }
 
 .hymn-section {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-}
-
-.hymn-verse {
-  
+  display: table-row;
 }
 
 .hymn-verse-number {
+  display: table-cell;
   text-align: right;
+  padding: 0.75em 0.5em 0.75em 0.25em;
+}
+
+.hymn-verse,
+.hymn-chorus {
+  display: table-cell;
+  padding: 0.75em 0.25em 0.75em 0.5em;
+}
+
+.hymn-verse > p,
+.hymn-chorus > p {
+  margin: 0;
+  padding-left: 1em;
+  text-indent: -1em;
+}
+
+.hymn-verse {
 }
 
 .hymn-chorus {
@@ -92,19 +126,30 @@ body {
 }
 
 .hymn-note {
+  display: block;
+  max-width: 600px;
   text-align: center;
   font-size: small;
   font-style: italic;
+  margin: 2em auto 0.5em auto;
 }
 
-.hymn-author {
-  
+.hymn-authorship {
+  max-width: 600px;
+  font-size: small;
+  margin: 1.5em auto 0 auto;
 }
+
+.hymn-author {}
 
 .hymn-author-type {
+  padding-right: 2em;
   text-align: right;
+  font-variant: small-caps;
 }
 
 .hymn-author-name {
+  padding-left: 0em;
   text-align: left;
+  font-style: italic;
 }

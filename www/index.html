@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hymns</title>
+    <title>Hymnal</title>
 
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -38,16 +38,27 @@
             <span id="book-name">Hymns</span>&nbsp;&nbsp;<span id="book-number"></span>
           </span>
         </div>
-        <div class="navbar-collapse collapse navbar-responsive-collapse">
-          <ul class="nav navbar-nav navbar-right nav-hymn">
-            <li><a href="#section-home">Home</a></li>
-            <li><a href="#section-learn">Categories</a></li>
+        <div class="navbar-collapse collapse navbar-responsive-collapse navbar-collapse-hymn nav-hymn">
+          <form class="navbar-form navbar-form-hymn navbar-right" role="search">
+            <div class="form-group">
+              <input id="number-search-input"
+                     type="number"
+                     class="form-control"
+                     placeholder="hymn number"
+                     onKeyup="if(event.keyCode == 13)loadHymnNumber()">
+            </div>
+          </form>
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+            </li>
+            <li><a href="#">Categories</a></li>
           </ul>
         </div>
       </div>
     </div>
 
     <div class="container" id="hymn-page">
+      <div id="hymn-greeting">Hymns</div>
     </div>
 
   </div>
@@ -82,14 +93,46 @@
   <script src="js/hymnal.js"></script>
 
   <script>
-    function init(){
-      $.getJSON('data/test/LSM.English.300.json',function(data){
+
+    var hymnBase = 'data/LSM/English/';
+
+    function loadHymn(id, errFunc){
+      $.getJSON(hymnBase + id + '.json',function(data){
         updateNav(data);
+        $('#hymn-page').children().remove();
         $('#hymn-page').append($(makePage(data)));
+      })
+      .fail(errFunc);
+    }
+
+    function loadHymnNumber(num){
+      if (num === null || num === undefined){
+        num = $('#number-search-input').val();
+      }
+      console.log("val: " + num);
+      loadHymn('LSM.English.' + num, function(){
+        console.log('hymn #' + num + ' not found!');
+        $('#number-search-input').val('').attr('placeholder', num + ' not found');
       });
     }
 
+    function init(){
+
+      // Prevent enter keypress submission
+      $(document).ready(function() {
+        $(window).keydown(function(event){
+          if(event.keyCode == 13) {
+            event.preventDefault();
+            return false;
+          }
+        });
+      });
+
+      loadHymnNumber(1);
+    }
+
     $(init());
+
   </script>
 
 </body>
