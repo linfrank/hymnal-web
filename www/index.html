@@ -35,23 +35,18 @@
             <span class="icon-bar icon-bar-pr"></span>
           </button>
           <span class="navbar-brand">
-            <span id="book-name">Hymns</span>&nbsp;&nbsp;<span id="book-number"></span>
+            <span id="book-name">Hymns</span>&nbsp;
+            <input id="number-search-input"
+                   type="number"
+                   placeholder="#"
+                   onKeyup="if(event.keyCode == 13)loadHymnNumber()"
+                   onKeydown="if(event.keyCode == 9)loadHymnNumber()" />
           </span>
         </div>
         <div class="navbar-collapse collapse navbar-responsive-collapse navbar-collapse-hymn nav-hymn">
-          <form class="navbar-form navbar-form-hymn navbar-right" role="search">
-            <div class="form-group">
-              <input id="number-search-input"
-                     type="number"
-                     class="form-control"
-                     placeholder="hymn number"
-                     onKeyup="if(event.keyCode == 13)loadHymnNumber()">
-            </div>
-          </form>
-          <ul class="nav navbar-nav navbar-right">
-            <li>
-            </li>
+          <ul class="nav navbar-nav navbar-right pull-right">
             <li><a href="#">Categories</a></li>
+            <li><a href="#">About</a></li>
           </ul>
         </div>
       </div>
@@ -96,38 +91,46 @@
 
     var hymnBase = 'data/LSM/English/';
 
-    function loadHymn(id, errFunc){
+    function loadHymn(id, doneFunc, errFunc){
       $.getJSON(hymnBase + id + '.json',function(data){
+        // Update navbar
         updateNav(data);
+        // Replace old page with new one
         $('#hymn-page').children().remove();
         $('#hymn-page').append($(makePage(data)));
       })
+      .done(doneFunc)
       .fail(errFunc);
     }
 
     function loadHymnNumber(num){
+      var needToggle = false;
       if (num === null || num === undefined){
         num = $('#number-search-input').val();
       }
-      console.log("val: " + num);
-      loadHymn('LSM.English.' + num, function(){
-        console.log('hymn #' + num + ' not found!');
-        $('#number-search-input').val('').attr('placeholder', num + ' not found');
-      });
+      loadHymn(
+        'LSM.English.' + num,
+        function(){
+          $('#number-search-input').val('').blur().attr('placeholder', num);
+        },
+        function(){
+          console.log('hymn #' + num + ' not found!');
+          $('#number-search-input').css('text-decoration','line-through');
+        });
     }
 
     function init(){
-
-      // Prevent enter keypress submission
-      $(document).ready(function() {
+      // Prevent keydown next and submission
+      $(document).ready(function(){
         $(window).keydown(function(event){
-          if(event.keyCode == 13) {
+          $('#number-search-input').css('text-decoration','none');
+          if(event.keyCode == 13 || event.keyCode == 9){
             event.preventDefault();
             return false;
           }
         });
       });
-
+      // Load default hymn
       loadHymnNumber(1);
     }
 
