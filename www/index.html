@@ -20,6 +20,8 @@
 
     <!-- hymnal css -->
     <link href="css/hymnal.css" rel="stylesheet">
+    <!-- page flip css -->
+    <link href="css/flip.css" rel="stylesheet">
     <!-- hymnal favicon -->
     <link rel="shortcut icon" href="images/favicon.png" />
 
@@ -39,21 +41,23 @@
             <input id="number-search-input"
                    type="number"
                    placeholder="#"
-                   onKeyup="if(event.keyCode == 13)loadHymnNumber()"
-                   onKeydown="if(event.keyCode == 9)loadHymnNumber()" />
+                   onKeyup="if(event.keyCode != 9) {clearTextDec(); numberInputEvent(event);}"
+                   onKeydown="if(event.keyCode == 9) {clearTextDec(); numberInputEvent(event);}" />
           </span>
         </div>
         <div class="navbar-collapse collapse navbar-responsive-collapse navbar-collapse-hymn nav-hymn">
           <ul class="nav navbar-nav navbar-right pull-right">
-            <li><a href="#">Categories</a></li>
+            <li><a href="#">Topics</a></li>
             <li><a href="#">About</a></li>
           </ul>
         </div>
       </div>
     </div>
 
-    <div class="container" id="hymn-page">
-      <div id="hymn-greeting">Hymns</div>
+    <div class="flip-container" id="page-container">
+      <div class="hymn-page flip-page">
+        <div id="hymn-greeting">Hymns</div>
+      </div>
     </div>
 
   </div>
@@ -62,76 +66,233 @@
   <script src="js/jquery-1.11.1.min.js"></script>
   <!-- Include all compiled plugins (below), or include individual files as needed -->
   <script src="js/bootstrap.min.js"></script>
-
-  <!-- Smooth scroll -->
-  <script src="js/jquery.easing.1.3.js"></script>
-  <script src="js/jquery.scrollTo-1.4.11.min.js"></script>
-  <script>
-    $(function() {
-      $("a[href^='#']").bind('click', 'ul li a', function(event) {
-        // prevents flickering
-        event.preventDefault();
-        // smooth scroll
-        $.scrollTo(event.target.hash, 750, {easing:'easeOutQuad',offset:-40});
-        // hide collapsed navbar after clicking
-        $(function() {
-          $('.nav a').on('click', function(){
-            if($('.navbar-toggle').css('display') !='none'){
-              $(".navbar-toggle").trigger( "click" );
-            }
-          });
-        });
-      });
-    });
-  </script>
+  <!-- Easy transition animations -->
+  <script src="js/jquery.transit-0.9.9.min.js"></script>
+  <!-- Swipes & scrolls -->
+  <script src="js/jquery.touchSwipe-1.6.min.js"></script>
 
   <script src="js/hymnal.js"></script>
 
   <script>
 
-    var hymnBase = 'data/LSM/English/';
+    var hymnBooks = {
+      'LSM.English' : { title : 'Hymns', hymns : null, topics : null, numMap : null }
+    };
 
-    function loadHymn(id, doneFunc, errFunc){
-      $.getJSON(hymnBase + id + '.json',function(data){
-        // Update navbar
-        updateNav(data);
-        // Replace old page with new one
-        $('#hymn-page').children().remove();
-        $('#hymn-page').append($(makePage(data)));
+    var hymnBookUrls = {
+      'LSM.English' : 'data/LSM/English/'
+    };
+
+    var currBookId = 'LSM.English';
+    var currPage = -1;
+
+    var navLock = false;
+
+    function loadBook(bookId, df, ff){
+      var url = hymnBookUrls[bookId]+'hymns.json';
+      console.log('Retrieving ' + bookId + ' from ' + url);
+      $.ajax({
+        url: url,
+        timeout: 5000,
+        dataType: 'json'
       })
-      .done(doneFunc)
-      .fail(errFunc);
+      .done(function(data){
+        console.log('Retrieved book: '+bookId);
+        var book = hymnBooks[bookId];
+        // insert downloaded data
+        book.hymns = data;
+        // populate book number -> hymn mapping
+        book.numMap = {};
+        for(var i = 0; i < data.length; i++){
+          book.numMap[data[i].properties.BookNumber]=i;
+        }
+        console.log('Numbers mapped for: ' + bookId);
+        df(data);
+      })
+      .fail(function(jqXHR, textStatus, errorThrown){
+        console.log('Error retrieving book: ' + bookId);
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown);
+        ff(jqXHR, textStatus, errorThrown);
+      })
     }
 
-    function loadHymnNumber(num){
-      var needToggle = false;
-      if (num === null || num === undefined){
-        num = $('#number-search-input').val();
+    function renderHymn(data, containerId){
+      // Replace old page with new one
+      $('#' + containerId).children().remove();
+      $('#' + containerId).append($(makePage(data)).addClass('flip-page'));
+    }
+
+    function loadHymnByPage(bookId, page, cb){
+      var book = hymnBooks[bookId];
+      if(book == null || book.hymns == null){
+        var error = Error('Cannot load hymn page ' + page +
+                          ' because current book (' + bookId + ') is not loaded!');
+        console.error(error);
+        if(cb && cb.fail) cb.fail(error);
       }
-      loadHymn(
-        'LSM.English.' + num,
-        function(){
-          $('#number-search-input').val('').blur().attr('placeholder', num);
-        },
-        function(){
-          console.log('hymn #' + num + ' not found!');
-          $('#number-search-input').css('text-decoration','line-through');
+      else if(page == null){
+        var error = Error('Page is undefined!');
+        console.error(error);
+        if(cb && cb.fail) cb.fail(error);
+      }
+      else{
+        if(page < 0 || page >= book.hymns.length){
+          var error = Error('Hymn page ' + page + ' does not exist!');
+          console.error('Hymn page ' + page + ' does not exist!');
+          if(cb && cb.fail) cb.fail(error);
+        }
+        else{
+          var hymn = book.hymns[page];
+          if(cb && cb.success) cb.success(hymn);
+        }
+      }
+    }
+
+    function jumpToPage(bookId, page, cb){
+      loadHymnByPage(
+        bookId, page, {
+          success: function(data){
+            updateNav(data);
+            $('#page-container').children().transition(
+              {opacity : 0}, function(){
+                this.remove();
+                $('#number-search-input').val('').blur().attr('placeholder', data.properties.BookNumber);
+                var newPage = $(makePage(data)).css({opacity : 0});
+                $('#page-container').append(newPage);
+                newPage.transition({opacity : 1});
+                if (cb && cb.success) cb.success(data);
+              });
+          },
+          fail: function(error){
+            if (cb && cb.fail) cb.fail(error);
+          }
+        });
+    }
+
+    function jumpToNumber(bookId, number, cb){
+      var page = hymnBooks[bookId].numMap[number];
+      if (page == null) {
+        $('#number-search-input').css('text-decoration','line-through');
+      }
+      else {
+        jumpToPage(bookId, page);
+      }
+    }
+
+    function clearTextDec(){
+      $('#number-search-input').css('text-decoration','none');
+    }
+
+    function numberInputEvent(event){
+      if(
+        event.keyCode == 9 || // tab / next
+        event.keyCode == 13 // enter
+      ){
+        jumpToNumber(currBookId, $('#number-search-input').val());
+      }
+    }
+
+    function prevPage(){
+      if(currPage > 0) return currPage - 1;
+      else return hymnBooks[currBookId].hymns.length-1;
+    }
+
+    function nextPage(){
+      if(currPage < hymnBooks[currBookId].hymns.length-1) return currPage + 1;
+      else return 0;
+    }
+
+    function nextHymn(){
+      // Lock navigation
+      if(navLock) return; else navLock = true;
+      // Find next page
+      currPage = nextPage();
+      // Load next page
+      loadHymnByPage(
+        currBookId, currPage, {
+          success: function(data){
+            // Create new page
+            var newPage = $(makePage(data)).css({position : 'absolute', top : 0});
+            // Transition out old page and remove it
+            $('#page-container').children()
+            .css({'z-index' : 1000})
+            .transition({x : '-100%', duration: 800}, function(){
+              this.remove();
+              // Update hymn number
+              $('#number-search-input').val('').attr('placeholder', data.properties.BookNumber);
+              newPage.css({position : 'relative'});
+              navLock = false;
+            });
+            // Add new page
+            $('#page-container').append(newPage);
+          }
+        });
+    }
+
+    function prevHymn(){
+      // Lock navigation
+      if(navLock) return; else navLock = true;
+      // Find previous page
+      currPage = prevPage();
+      // Load previous page
+      loadHymnByPage(
+        currBookId, currPage, {
+          success: function(data){
+            // Fix old page
+            var oldPage = $('#page-container').children()
+            .css({position : 'absolute'})
+            // Create new page
+            var newPage = $(makePage(data))
+            .css({position : 'relative', left : '-100%', 'z-index' : 1000});
+            // Add new page
+            $('#page-container').append(newPage);
+            // Flip it
+            newPage.transition({x : '100%', duration: 800}, function(){
+              oldPage.remove();
+              this.css({'z-index' : 0});
+              // Update hymn number
+              $('#number-search-input').val('').attr('placeholder', data.properties.BookNumber);
+              // Unlock navigation
+              navLock = false;
+            });
+          }
         });
     }
 
     function init(){
+
       // Prevent keydown next and submission
       $(document).ready(function(){
+        // Handle key events
         $(window).keydown(function(event){
-          $('#number-search-input').css('text-decoration','none');
+          // enter & tab
           if(event.keyCode == 13 || event.keyCode == 9){
             event.preventDefault();
             return false;
           }
+          // left
+          else if(event.keyCode == 37){
+            event.preventDefault();
+            prevHymn();
+          }
+          // right
+          else if(event.keyCode == 39){
+            event.preventDefault();
+            nextHymn();
+          }
         });
+        // Handle swipe events
+        $("#curr-page").swipe( { swipeLeft:pageSwipe, swipeRight:pageSwipe, allowPageScroll:"auto"} );
+        function pageSwipe(event, direction, distance, duration, fingerCount) {
+          if(direction == $.fn.swipe.directions.RIGHT) prevHymn();
+          else if(direction == $.fn.swipe.directions.LEFT) nextHymn();
+        }
       });
-      // Load default hymn
-      loadHymnNumber(1);
+
+      loadBook(currBookId,function(){jumpToPage(currBookId, currPage = 0)});
+
     }
 
     $(init());

@@ -24,10 +24,6 @@ function updateBook(book){
   $('#book-name').text(book);
 }
 
-function updateBookNumber(bookNumber){
-  $('#book-number').text(bookNumber);
-}
-
 function makeCategory(cat){
   return '<h4 class="hymn-category">'+cat+'</h4>';
 }
@@ -120,18 +116,18 @@ function makeAuthorship(hymn){
 }
 
 function makePage(hymn){
-  var s = '';
+  var s = '<div class="hymn-page flip-page">';
   s += makeCategory(getCategory(hymn));
   s += makeTitle(getTitle(hymn));
   s += makeMeter(getMeter(hymn));
   s += makeSong(hymn.song);
   if (valid(hymn.note)) s += makeNote(hymn.note);
   s += makeAuthorship(hymn);
+  s += '</div>';
   return s;
 }
 
 function updateNav(hymn){
   var prop = hymn.properties;
   if (valid(prop) && valid(prop.Book)) updateBook(prop.Book);
-  if (valid(prop) && valid(prop.BookNumber)) updateBookNumber(prop.BookNumber);
 }

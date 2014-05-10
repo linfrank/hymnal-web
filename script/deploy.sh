@@ -20,4 +20,4 @@ fi
 
 # use rsync!
 
-rsync -av --delete www/ ${dest}/
+rsync -av --exclude=".DS_Store" --delete www/ ${dest}/
