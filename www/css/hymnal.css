@@ -5,7 +5,7 @@ html, body {
 }
 
 body {
-  background-color: #e5e5c7;
+  background-color: #383838;
 }
 
 /* Bootstrap components */
@@ -69,6 +69,7 @@ body {
   padding-bottom: 1em;
   padding-left: 10px;
   padding-right: 10px;
+  /*box-shadow: 2px 2px 2px 0 #454545; /* for page flip */
 }
 
 .hymn-category {
