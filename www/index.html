@@ -284,7 +284,7 @@
           }
         });
         // Handle swipe events
-        $("#curr-page").swipe( { swipeLeft:pageSwipe, swipeRight:pageSwipe, allowPageScroll:"auto"} );
+        $("#page-container").swipe( { swipeLeft:pageSwipe, swipeRight:pageSwipe, allowPageScroll:"auto"} );
         function pageSwipe(event, direction, distance, duration, fingerCount) {
           if(direction == $.fn.swipe.directions.RIGHT) prevHymn();
           else if(direction == $.fn.swipe.directions.LEFT) nextHymn();

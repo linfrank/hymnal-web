@@ -5,7 +5,7 @@ html, body {
 }
 
 body {
-  background-color: #4b4b3d;
+  background-color: #e5e5c7;
 }
 
 /* Bootstrap components */
@@ -67,6 +67,8 @@ body {
   padding-top: 0.5em;
   /*margin-top: calc(1em + 70px); /* 70px for fixed navbar */
   padding-bottom: 1em;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .hymn-category {
