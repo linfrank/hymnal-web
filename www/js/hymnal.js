@@ -12,7 +12,11 @@ var currBookId = 'LSM.English';
 var currPage = -1;
 
 var navLock = false;
-var flipTime = 600;
+
+function flipTime(){
+  var time = $('#page-container').width() * 0.7;
+  return Math.max(350, Math.min(850, time));
+}
 
 function loadBook(bookId, df, ff){
   var url = hymnBookUrls[bookId]+'hymns.json';
@@ -44,12 +48,6 @@ function loadBook(bookId, df, ff){
   });
 }
 
-function renderHymn(data, containerId){
-  // Replace old page with new one
-  $('#' + containerId).children().remove();
-  $('#' + containerId).append($(makePage(data)).addClass('flip-page'));
-}
-
 function loadHymnByPage(bookId, page, cb){
   var book = hymnBooks[bookId];
   var error;
@@ -77,17 +75,37 @@ function loadHymnByPage(bookId, page, cb){
   }
 }
 
+function getHymnByPage(bookId, page){
+  var book = hymnBooks[bookId];
+  if(book === undefined || book.hymns === undefined){
+    console.error(Error('Cannot load page ' + page + ' because current book (' + bookId + ') is not loaded!'));
+    return null;
+  }
+  else if(page === undefined){
+    console.error(Error('Page is undefined!'));
+    return null;
+  }
+  else if(page < 0 || page >= book.hymns.length){
+    console.error(Error('Hymn page ' + page + ' does not exist!'));
+    return null;
+  }
+  else{
+    return book.hymns[page];
+  }
+}
+
 function jumpToPage(bookId, page, cb){
   loadHymnByPage(
     bookId, page, {
       success: function(data){
+        currPage = page;
         $('#number-search-input').val('').blur().attr('placeholder', data.properties.BookNumber);
         $('#page-container').children().transition(
-          {scale: 0.75, opacity : 0}, flipTime/2, 'out', function(){
+          {scale: 0.75, opacity : 0}, flipTime()/2, 'out', function(){
             this.remove();
             var newPage = $(makePage(data)).css({scale: 0.75, opacity : 0});
             $('#page-container').append(newPage);
-            newPage.transition({scale: 1, opacity : 1}, flipTime/2, 'in', function(){
+            newPage.transition({scale: 1, opacity : 1}, flipTime()/2, 'in', function(){
               updateNav(data);
               if (cb && cb.success) cb.success(data);
             }); 
@@ -143,22 +161,22 @@ function nextHymn(){
       success: function(data){
         // scroll to top
         //window.scrollTo(0, 0);
-        $('html, body').animate({scrollTop: 0}, flipTime);
+        //$('html, body').animate({scrollTop: 0}, flipTime());
         // Create new page
         var newPage = $(makePage(data))
-        .css({position : 'absolute', top : 0}) // set up position
+        .css({top : 0}) // set up position
         .css({scale: 0.75, opacity: 0}); // set up flip transition
         // Transition out old page and remove it
         $('#page-container').children()
         .css({'z-index' : 1000})
-        .transition({x : '-100%'}, flipTime, 'out', function(){
+        .transition({x : '-100%'}, flipTime(), 'out', function(){
           this.remove();
         });
         // Add new page
         $('#page-container').append(newPage);
-        newPage.transition({scale: 1, opacity: 1}, flipTime, 'out', function(){
+        newPage.transition({scale: 1, opacity: 1}, flipTime(), 'out', function(){
           // Update hymn number
-          $('#number-search-input').val('').attr('placeholder', data.properties.BookNumber);
+          $('#number-search-input').val('').blur().attr('placeholder', data.properties.BookNumber);
           navLock = false;
         });
       }
@@ -176,7 +194,7 @@ function prevHymn(){
       success: function(data){
         // scroll to top
         //window.scrollTo(0, 0);
-        $('html, body').animate({scrollTop: 0}, flipTime);
+        //$('html, body').animate({scrollTop: 0}, flipTime());
         // Get old page
         var oldPage = $('#page-container').children();
         // Create new page
@@ -185,25 +203,94 @@ function prevHymn(){
         // Add new page
         $('#page-container').append(newPage);
         // Transition in new page
-        newPage.transition({x : '0'}, flipTime, 'out', function(){
+        newPage.transition({x : '0'}, flipTime(), 'out', function(){
           this.css({'z-index' : ''});
           // Update hymn number
-          $('#number-search-input').val('').attr('placeholder', data.properties.BookNumber);
+          $('#number-search-input').val('').blur().attr('placeholder', data.properties.BookNumber);
           // Unlock navigation
           navLock = false;
         });
         // Transition out old page
-        oldPage.transition({scale: 0.75, opacity: 0}, flipTime, 'out', function(){
+        oldPage.transition({scale: 0.75, opacity: 0}, flipTime(), 'out', function(){
           this.remove();
         });
       }
     });
 }
 
-function pageSwipe(event, direction, distance, duration, fingerCount) {
+function pageSwipeSimple(event, direction, distance, duration, fingerCount) {
   if(direction == $.fn.swipe.directions.RIGHT) prevHymn();
   else if(direction == $.fn.swipe.directions.LEFT) nextHymn();
 }
+
+
+/*
+var swiping = false;
+var swipingStartX = 0;
+var swipingDir = '';
+var swipingAnimating = false;
+var leftPage = null;
+var rightPage = null;
+
+function pageSwipe(event, phase, direction, distance, duration) {
+
+
+  console.log(phase);
+  console.log(direction);
+  console.log(distance);
+  console.log(duration);
+
+
+  if(phase == 'move' && !swiping){
+    swiping = true;
+    swipingDir = direction;
+    if(direction == 'left'){
+      var nextHymn = getHymnByPage(currBookId, nextPage());
+      if(nextHymn !== null){
+        leftPage = $('#page-container').children()
+        .css({'z-index' : 1000});
+        rightPage = $(makePage(nextHymn))
+        .css({top : 0}) // set up position
+        .css({scale: 0.75, opacity: 0}); // set up flip transition
+        // Add new page
+        $('#page-container').append(rightPage);
+      }
+    }
+    else if(direction == 'right'){
+      var prevHymn = getHymnByPage(currBookId, prevPage());
+      if(prevHymn !== null){
+        rightPage = $('#page-container').children();
+        leftPage = $(makePage(prevHymn))
+        .css({transform : 'translate(-100%,0)', 'z-index' : 1000}); // set up flip position
+        // Add new page
+        $('#page-container').append(leftPage);
+      }
+    }
+  }
+  else if(phase == 'move' && swiping){
+    if(!swipingAnimating){
+      swipingAnimating = true;
+      var pageWidth = $(window).width();
+      var rTrans = direction == 'left' ? -distance : distance;
+      leftPage.transition({x : rTrans}, 50, 'linear', function(){
+        swipingAnimating = false;
+      });
+    }
+    /*
+    var lScale = distance / pageWidth * 0.25;
+    lScale = direction == 'left' ? lScale : -lScale;
+    var lOpacity = distance / pageWidth;
+    lOpacity = direction == 'left' ? lOpacity : 1-lOpacity;
+    leftPage.transition({scale : '+=' + lScale, opacity : '+=' + lOpacity}, 100, 'linear');
+    
+  }
+  else if(phase == 'end'){
+
+  }  
+
+
+}
+*/
 
 function initHymn(){
 
@@ -227,7 +314,8 @@ function initHymn(){
   });
 
   // Handle swipe events
-  $("#page-container").swipe({swipeLeft:pageSwipe, swipeRight:pageSwipe, allowPageScroll:"auto"});
+  $("#page-container").swipe({swipeLeft : pageSwipeSimple, swipeRight : pageSwipeSimple, allowPageScroll : "auto"});
+  //$("#page-container").swipe({swipeStatus : pageSwipe, allowPageScroll : 'vertical'});
 
   // Load book!
   loadBook(currBookId,function(){jumpToPage(currBookId, currPage = 0);});
