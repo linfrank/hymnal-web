@@ -8,6 +8,8 @@ function get(s){
   return valid(s) ? s : '';
 }
 
+/* Hymn page */
+
 function getCategory(hymn){
   return get(hymn.properties.Category);
 }
@@ -115,7 +117,7 @@ function makeAuthorship(hymn){
   return s;
 }
 
-function makePage(hymn){
+function makeHymnPage(hymn){
   var s = '<div class="hymn-page flip-page">';
   s += makeCategory(getCategory(hymn));
   s += makeTitle(getTitle(hymn));
@@ -130,4 +132,12 @@ function makePage(hymn){
 function updateNav(hymn){
   var prop = hymn.properties;
   if (valid(prop) && valid(prop.Book)) updateBook(prop.Book);
+}
+
+/* Topics page */
+
+
+
+function makeTopicsPage(topics){
+  
 }

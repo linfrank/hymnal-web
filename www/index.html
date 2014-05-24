@@ -32,23 +32,24 @@
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle navbar-toggle-hymn" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-            <span class="icon-bar icon-bar-pr"></span>
-            <span class="icon-bar icon-bar-pr"></span>
-            <span class="icon-bar icon-bar-pr"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
           </button>
           <span class="navbar-brand">
             <span id="book-name">Hymns</span>&nbsp;
-            <input id="number-search-input"
-                   type="number"
-                   placeholder="#"
-                   onKeyup="if(event.keyCode != 9) {clearTextDec(); numberInputEvent(event);}"
-                   onKeydown="if(event.keyCode == 9) {clearTextDec(); numberInputEvent(event);}" />
+          </span>
+          <span class="navbar-brand" style="float:right; padding-left:5px">
+          <input id="number-search-input"
+                 type="number"
+                 placeholder="#"
+                 onKeyup="if(event.keyCode != 9) {clearTextDec(); numberInputEvent(event);}"
+                 onKeydown="if(event.keyCode == 9) {clearTextDec(); numberInputEvent(event);}" />
           </span>
         </div>
-        <div class="navbar-collapse collapse navbar-responsive-collapse navbar-collapse-hymn nav-hymn">
-          <ul class="nav navbar-nav navbar-right pull-right">
+        <div class="navbar-collapse collapse navbar-responsive-collapse navbar-collapse-hymn navbar-right nav-hymn">
+          <ul class="nav navbar-nav pull-left">
             <li><a href="#">Topics</a></li>
-            <li><a href="#">About</a></li>
           </ul>
         </div>
       </div>
