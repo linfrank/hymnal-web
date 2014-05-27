@@ -5,50 +5,36 @@ body {
   color: #242001;
 }
 
-/* Bootstrap components */
-
-.navbar-default-hymn {
-  background-color: #e5e5c7;
-  margin-bottom: 0;
-  border-radius: 0;
-  border: none;
-}
-
-.navbar-toggle-hymn {
-  border: none;
-  float: left;
-  margin-left: 8px;
-  margin-right: 0;
-}
-
-.navbar-default-hymn .navbar-toggle-hymn:hover,
-.navbar-default-hymn .navbar-toggle-hymn:focus {
-  background-color: #dedebc;
-}
-
-.navbar-default-hymn .navbar-collapse-hymn {
-  border: none;
-}
-
-.nav-hymn {
-  text-align: right;
-  font-family: sans-serif;
-}
-
 /* Hymn nav components */
 
-#book-name {
+.hymn-nav {
+  background-color: #e5e5c7;
   font-family: sans-serif;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.hymn-nav-label {
+  background-color: #e5e5c7;
+}
+
+.hymn-book {
   font-variant: small-caps;
 }
 
-#number-search-input {
+.hymn-input {
   background-color: #ededdf;
-  font-family: sans-serif;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  width: 2.75em;
-  padding: 0 0.2em 0 0.2em;
+}
+
+.hymn-number-input {
+  text-align: right;
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+  max-width: 5em;
+  float: right;
+}
+
+.hymn-text-input { 
 }
 
 /* Greetings page components */
@@ -66,7 +52,6 @@ body {
   background-color: #e5e5c7;
   font-family: serif;
   padding-top: 0.5em;
-  /*margin-top: calc(1em + 70px); /* 70px for fixed navbar */
   padding-bottom: 1em;
   padding-left: 10px;
   padding-right: 10px;

@@ -1,7 +1,8 @@
-/*global console, $, makeHymnPage, updateNav, document, window */
+/*global console, $, makeHymnPage, updateNav, document, window, Bloodhound, Handlebars */
 
-var hymnbooks = {}; // catalog of hymnbooks (hymnals)
+var bookshelf = {}; // catalog of hymnbooks (hymnals)
 var hymnstore = {}; // data store of hymns
+var searchbase = []; // search data base
 
 var currBookId;
 var currPage = -1;
@@ -33,6 +34,7 @@ function loadHymns(url, df, ff){
   .done(function(hymns){
     console.log('Retrieved ' + hymns.length + ' hymns');
     for(var i = 0; i < hymns.length; i++){
+      // add to hymn store
       hymnstore[hymns[i].id] = hymns[i];
     }
     console.log('Loaded ' + hymns.length + ' hymns into hymnstore');
@@ -56,8 +58,8 @@ function loadHymnbook(url, df, ff){
   })
   .done(function(hymnal){
     console.log('Retrieved hymnbook: ' + hymnal.id);
-    hymnbooks[hymnal.id] = hymnal;
-    hymnal.pages = new Array(hymnal.order.length); // page -> number
+    bookshelf[hymnal.id] = hymnal;
+    hymnal.pages = []; hymnal.pages.length = hymnal.order.length; // page -> number
     hymnal.numbers = {}; // number -> page
     for(var i = 0; i < hymnal.order.length; i++){
       hymnal.pages[i] = hymnal.order[i];
@@ -77,7 +79,7 @@ function loadHymnbook(url, df, ff){
 
 function getHymnbook(bookId){
   if(checkVar(bookId, 'Book ID')){
-    return hymnbooks[bookId];
+    return bookshelf[bookId];
   }
 }
 
@@ -127,7 +129,7 @@ function jumpToPage(bookId, page, cb){
 
 function jumpToNumber(bookId, number, cb){
   if(checkVar(bookId, "Book ID") && checkVar(bookId, "Hymn number")){
-    jumpToPage(bookId, hymnbooks[bookId].numbers[number]);
+    jumpToPage(bookId, bookshelf[bookId].numbers[number]);
   }
 }
 
@@ -146,11 +148,11 @@ function numberInputEvent(event){
 
 function prevPage(){
   if(currPage > 0) return currPage - 1;
-  else return hymnbooks[currBookId].pages.length-1;
+  else return bookshelf[currBookId].pages.length-1;
 }
 
 function nextPage(){
-  if(currPage < hymnbooks[currBookId].pages.length-1) return currPage + 1;
+  if(currPage < bookshelf[currBookId].pages.length-1) return currPage + 1;
   else return 0;
 }
 
@@ -223,6 +225,31 @@ function pageSwipeSimple(event, direction, distance, duration, fingerCount) {
   else if(direction == $.fn.swipe.directions.LEFT) nextHymn();
 }
 
+function indexSearchbase(bookId) {
+  var book = bookshelf[bookId];
+  for(var number in book.binding){
+    var hymnId = book.binding[number];
+    var hymn = hymnstore[hymnId];
+    if(checkVar(hymn)){
+      var lineSet = {};
+      for(var j = 0; j < hymn.song.length; j++){
+        for(var k = 0; k < hymn.song[j].lines.length; k++){
+          var line = hymn.song[j].lines[k];
+          if(checkVar(line)) lineSet[line] = null; // no value
+        }
+      }
+      for(var key in lineSet){
+        searchbase.push({
+          line: key,
+          bookId: bookId,
+          bookName: book.title,
+          number: number
+        });
+      }
+    }
+  }
+}
+
 function initHymn(){
 
   // Handle key events
@@ -253,10 +280,45 @@ function initHymn(){
     'data/LSM.English.hymnal.json',
     function(data){
       loadHymns(
-      'data/LSM.English.hymns.json',
-      function(data){
-        jumpToPage(currBookId = 'LSM.English', currPage = 0);
-      });
+        'data/LSM.English.hymns.json',
+        function(data){
+
+          indexSearchbase('LSM.English');
+
+          var hymnbh = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('line'),
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            local: searchbase,
+            limit: 7
+          });
+
+          // kicks off the loading/processing of `local` and `prefetch`
+          hymnbh.initialize();
+
+          $('#text-search-input')
+          .typeahead(
+            {
+              hint: false,
+              highlight: true,
+              minLength: 1
+            },
+            {
+              name: 'hymnbh',
+              displayKey: 'line',
+              source: hymnbh.ttAdapter(),
+              templates: {
+                suggestion: Handlebars.compile('<p>{{line}} {{bookName}} {{number}}</p>')
+              }
+            })
+          .on('typeahead:selected', function(event, data) {
+            jumpToNumber(data.bookId,data.number);
+          });
+
+          currBookId = 'LSM.English';
+          currPage = 0;
+          //jumpToPage(currBookId, currPage);
+
+        });
     });
 
 }

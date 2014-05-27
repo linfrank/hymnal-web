@@ -15,7 +15,7 @@ function getCategory(hymn){
 }
 
 function getTitle(hymn){
-  return valid(hymn.title)? hymn.title : 'Hymn '+hymn.id.substr(hymn.id.lastIndexOf('.')+1);
+  return valid(hymn.title)? hymn.title : '' //makeHorizontalLine(100, 1, '#333'); //'Hymn '+hymn.id.substr(hymn.id.lastIndexOf('.')+1);
 }
 
 function getMeter(hymn){
@@ -136,8 +136,16 @@ function updateNav(hymn){
 
 /* Topics page */
 
-
-
 function makeTopicsPage(topics){
   
+}
+
+/* Misc */
+
+function makeHorizontalLine(length, width, color){
+  var w = width + 2;
+  var s = '<svg width="' + length + 'px" height="' + w + 'px" viewBox="0 0 ' + length + ' ' + w + '">';
+  s += '<line x1="0" y1="' + (w / 2) + '" x2="' + length + '" y2="' + (w / 2) + '" style="stroke: ' + color + ';"/>';
+  s += '</svg>';
+  return s;
 }
