@@ -312,6 +312,7 @@ function initHymn(){
             })
           .on('typeahead:selected', function(event, data) {
             jumpToNumber(data.bookId,data.number);
+            $('#text-search-input').blur().val('');
           });
 
           currBookId = 'LSM.English';

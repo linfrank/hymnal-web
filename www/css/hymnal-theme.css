@@ -14,10 +14,6 @@ body {
   padding-bottom: 5px;
 }
 
-.hymn-nav-label {
-  background-color: #e5e5c7;
-}
-
 .hymn-book {
   font-variant: small-caps;
 }
@@ -32,9 +28,42 @@ body {
   padding-right: 0.4em;
   max-width: 5em;
   float: right;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
-.hymn-text-input { 
+.hymn-text-input {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.hymn-text-input::-webkit-input-placeholder {
+  padding-top: 0.2em;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+
+  -webkit-font-smoothing: antialiased;
+}
+.hymn-text-input::-moz-placeholder {
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+
+  -moz-osx-font-smoothing: grayscale;
+}
+.hymn-text-input:-ms-input-placeholder {
+  padding-top: 0.2em;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+}
+
+.hymn-text-input ~ .tt-dropdown-menu {
+  background-color: #ededdf;
 }
 
 /* Greetings page components */
