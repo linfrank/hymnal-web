@@ -330,10 +330,10 @@ function initHymn(){
                 bookshelf['LSM.English'].title +
                 '</span>',
                 suggestion: Handlebars.compile(
-                  '<div class="hymn-suggestion">' +
+                  '<div class="panel panel-default hymn-suggestion"><div class="panel-body">' +
                   '<span class="hymn-suggestion-line">{{line}}</span>' +
                   '<span class="hymn-suggestion-number">{{number}}</span>' +
-                  '</div>'
+                  '</div></div>'
                 )
               }
             })

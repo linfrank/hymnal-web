@@ -75,22 +75,18 @@ body {
 /* Typeahead components */
 
 .hymn-suggestion-book {
-  font-size: large;
   font-family: sans-serif;
   font-variant: small-caps;
   color: #999;
-  margin-left: 1em;
-  margin-right: 1em;
+  float: right;
+  margin-left: 2em;
+  margin-right: 2em;
 }
 
 .hymn-suggestion {
   background-color: #e5e5c7;
-  padding: 0.2em 0.5em 0.2em 0.5em;
   margin-top: 2px;
   margin-bottom: 2px;
-  box-shadow: 1px 1px 1px 0px #999;
-  border-radius: 3px;
-  overflow: auto;
   cursor: pointer;
 }
 .hymn-suggestion:hover,
@@ -115,6 +111,7 @@ body {
   float: right;
   position: relative;
   bottom: -0.2em;
+  margin-left: 0.5em;
 }
 
 /* Greetings page components */
