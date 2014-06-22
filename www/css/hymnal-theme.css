@@ -14,6 +14,12 @@ body {
   padding-bottom: 5px;
 }
 
+.hymn-btn {
+  background-color: #e5e5c7;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 .hymn-book {
   font-variant: small-caps;
 }
@@ -64,6 +70,51 @@ body {
 
 .hymn-text-input ~ .tt-dropdown-menu {
   background-color: #ededdf;
+}
+
+/* Typeahead components */
+
+.hymn-suggestion-book {
+  font-size: large;
+  font-family: sans-serif;
+  font-variant: small-caps;
+  color: #999;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+.hymn-suggestion {
+  background-color: #e5e5c7;
+  padding: 0.2em 0.5em 0.2em 0.5em;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  box-shadow: 1px 1px 1px 0px #999;
+  border-radius: 3px;
+  overflow: auto;
+  cursor: pointer;
+}
+.hymn-suggestion:hover,
+.hymn-suggestion:focus {
+  background-color: #ededdf;
+}
+
+.hymn-suggestion-line {
+  font-size: large;
+  font-family: serif;
+}
+.hymn-suggestion-line strong {
+  /*background-color: #77773b;*/
+  /*color: #ededdf;*/
+  text-decoration: underline;
+  text-decoration-style: double;
+  font-weight: normal;
+}
+
+.hymn-suggestion-number {
+  color: #999;
+  float: right;
+  position: relative;
+  bottom: -0.2em;
 }
 
 /* Greetings page components */

@@ -10,7 +10,7 @@ var currPage = -1;
 var navLock = false;
 
 function flipTime(){
-  var time = $('#page-container').width() * 0.7;
+  var time = $('#page-container').width() * 0.8;
   return Math.max(350, Math.min(850, time));
 }
 
@@ -148,11 +148,11 @@ function numberInputEvent(event){
 
 function prevPage(){
   if(currPage > 0) return currPage - 1;
-  else return bookshelf[currBookId].pages.length-1;
+  else return bookshelf[currBookId].pages.length - 1;
 }
 
 function nextPage(){
-  if(currPage < bookshelf[currBookId].pages.length-1) return currPage + 1;
+  if(currPage < bookshelf[currBookId].pages.length - 1) return currPage + 1;
   else return 0;
 }
 
@@ -182,6 +182,8 @@ function nextHymn(){
     newPage.transition({scale: 1, opacity: 1}, flipTime(), 'out', function(){
       // Update hymn number
       $('#number-search-input').val('').blur().attr('placeholder', book.pages[currPage]);
+      // Remove focus from text search
+      $('#text-search-input').blur();
       navLock = false;
     });
   }
@@ -210,6 +212,8 @@ function prevHymn(){
       this.css({'z-index' : ''});
       // Update hymn number
       $('#number-search-input').val('').blur().attr('placeholder', book.pages[currPage]);
+      // Remove focus from text search
+      $('#text-search-input').blur();
       // Unlock navigation
       navLock = false;
     });
@@ -232,10 +236,23 @@ function indexSearchbase(bookId) {
     var hymn = hymnstore[hymnId];
     if(checkVar(hymn)){
       var lineSet = {};
-      for(var j = 0; j < hymn.song.length; j++){
-        for(var k = 0; k < hymn.song[j].lines.length; k++){
-          var line = hymn.song[j].lines[k];
-          if(checkVar(line)) lineSet[line] = null; // no value
+      for(var j = 0; j < hymn.song.length; j ++) {
+        var section = hymn.song[j].lines;
+        for(var k = 0; k < section.length;) {
+          // Add the odd line to index unit
+          var line = section[k];
+          k ++;
+          // Add the next even line to unit if it exists
+          if(k < section.length) {
+            line = line + ' ' + section[k];
+            k ++;
+          }
+          // Add the next odd line if it's the last line of the section
+          if(k == section.length - 1) {
+            line = line + ' ' + section[k];
+            k ++;
+          }
+          if(checkVar(line)) lineSet[line] = null; // add to set; no value
         }
       }
       for(var key in lineSet){
@@ -289,7 +306,7 @@ function initHymn(){
             datumTokenizer: Bloodhound.tokenizers.obj.whitespace('line'),
             queryTokenizer: Bloodhound.tokenizers.whitespace,
             local: searchbase,
-            limit: 7
+            limit: 10
           });
 
           // kicks off the loading/processing of `local` and `prefetch`
@@ -306,14 +323,31 @@ function initHymn(){
               name: 'hymnbh',
               displayKey: 'line',
               source: hymnbh.ttAdapter(),
+              queryTokenizer: Bloodhound.tokenizers.whitespace,
               templates: {
-                suggestion: Handlebars.compile('<p>{{line}} {{bookName}} {{number}}</p>')
+                header:
+                '<span class="hymn-suggestion-book">' +
+                bookshelf['LSM.English'].title +
+                '</span>',
+                suggestion: Handlebars.compile(
+                  '<div class="hymn-suggestion">' +
+                  '<span class="hymn-suggestion-line">{{line}}</span>' +
+                  '<span class="hymn-suggestion-number">{{number}}</span>' +
+                  '</div>'
+                )
               }
             })
           .on('typeahead:selected', function(event, data) {
             jumpToNumber(data.bookId,data.number);
             $('#text-search-input').blur().val('');
           });
+
+          // set typeahead suggestion height
+          $('#text-search-input ~ .tt-dropdown-menu')
+          .css(
+            'max-height',
+            ($(window).height() - $('#text-search-input').offset().top - $('#text-search-input').height() - 50) + 'px'
+          );
 
           currBookId = 'LSM.English';
           currPage = 0;

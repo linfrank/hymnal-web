@@ -29,3 +29,9 @@ input[type=number] {
   width: 100% !important;
   min-height: 100% !important; /* to stretch to vertical height */
 }
+
+/* Typeahead */
+
+#text-search-input ~ .tt-dropdown-menu {
+  overflow-y: auto;
+}
