@@ -157,6 +157,8 @@ function nextPage(){
 }
 
 function nextHymn(){
+  // Clear and remove focus from text search
+  $('#text-search-input').blur().typeahead('val', '');
   // Lock navigation
   if(navLock) return; else navLock = true;
   // Find next page
@@ -166,7 +168,7 @@ function nextHymn(){
   var hymn = getHymnByPage(book, currPage);
   if(checkVar(hymn, 'Hymn')){
     //window.scrollTo(0, 0); // jump to top
-    //$('html, body').animate({scrollTop: 0}, flipTime()); // scroll to top
+    $('html, body').animate({scrollTop: 0}, flipTime()); // scroll to top
     // Create new page
     var newPage = $(makeHymnPage(hymn))
     .css({top : 0}) // set up position
@@ -182,14 +184,14 @@ function nextHymn(){
     newPage.transition({scale: 1, opacity: 1}, flipTime(), 'out', function(){
       // Update hymn number
       $('#number-search-input').val('').blur().attr('placeholder', book.pages[currPage]);
-      // Remove focus from text search
-      $('#text-search-input').blur();
       navLock = false;
     });
   }
 }
 
 function prevHymn(){
+  // Clear and remove focus from text search
+  $('#text-search-input').blur().typeahead('val', '');
   // Lock navigation
   if(navLock) return; else navLock = true;
   // Find previous page
@@ -199,7 +201,7 @@ function prevHymn(){
   var hymn = getHymnByPage(book, currPage);
   if(checkVar(hymn, 'Hymn')){
     //window.scrollTo(0, 0); // jump to top
-    //$('html, body').animate({scrollTop: 0}, flipTime()); // scroll to top
+    $('html, body').animate({scrollTop: 0}, flipTime()); // scroll to top
     // Get old page
     var oldPage = $('#page-container').children();
     // Create new page
@@ -212,8 +214,6 @@ function prevHymn(){
       this.css({'z-index' : ''});
       // Update hymn number
       $('#number-search-input').val('').blur().attr('placeholder', book.pages[currPage]);
-      // Remove focus from text search
-      $('#text-search-input').blur();
       // Unlock navigation
       navLock = false;
     });
@@ -339,7 +339,7 @@ function initHymn(){
             })
           .on('typeahead:selected', function(event, data) {
             jumpToNumber(data.bookId,data.number);
-            $('#text-search-input').blur().val('');
+            $('#text-search-input').blur().typeahead('val', '');
           });
 
           // set typeahead suggestion height
