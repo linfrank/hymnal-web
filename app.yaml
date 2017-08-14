@@ -1,12 +1,23 @@
+application: hymnpage
+version: 1
 runtime: python27
 api_version: 1
 threadsafe: true
 
 handlers:
-  - url: /
-    static_files: www/index.html
-    upload: www/index.html
+# root
+- url: /
+  static_files: www/index.html
+  upload: www/index.html
 
-  - url: /(.*)
-    static_files: www/\1
-    upload: www/(.*)
+# Serve our home page in case index.html is requested
+- url: /index.html
+  static_files: www/index.html
+  upload: www/index.html
+
+# All images and support file (css, fonts...): return file if found, 
+# otherwise the default 404 page so it can be handled by sites that link
+# directly to images.
+- url: /(.*\.(html|js|json|gif|png|jpg|ico|bmp|css|otf|eot|svg|ttf|woff))
+  static_files: www/\1
+  upload: www/(.*\.(html|js|json|gif|png|jpg|ico|bmp|css|otf|eot|svg|ttf|woff))
