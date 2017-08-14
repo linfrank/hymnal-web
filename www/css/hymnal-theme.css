@@ -148,7 +148,8 @@ body {
 .hymn-meter {
   text-align: center;
   font-size: small;
-  margin: 0;
+  margin-top: 0;
+  margin-bottom: 0.75em;
 }
 
 .hymn-song {
