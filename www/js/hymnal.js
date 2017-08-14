@@ -303,7 +303,7 @@ function initHymn(){
           indexSearchbase('LSM.English');
 
           var hymnbh = new Bloodhound({
-            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('line'),
+            datumTokenizer: Bloodhound.tokenizers.obj.nonword('line'),
             queryTokenizer: Bloodhound.tokenizers.whitespace,
             local: searchbase,
             limit: 10
