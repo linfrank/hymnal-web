@@ -10,9 +10,9 @@ body {
 
 .hymn-nav {
   background-color: #e5e5c7;
-  font-family: sans-serif;
   padding-top: 5px;
   padding-bottom: 5px;
+  font-family: sans-serif;
 }
 
 .hymn-btn {
@@ -29,15 +29,15 @@ body {
   background-color: #ededdf;
 }
 
-.hymn-number-input {
+.hymn-number-display {
   text-align: right;
-  padding-left: 0.4em;
-  padding-right: 0.4em;
+  padding: 0.5em 0.5em 0.5em 0.5em;
   max-width: 5em;
   float: right;
   margin-top: 5px;
   margin-bottom: 5px;
-  font-size: 16px; /* required for iOS to not zoom */
+  font-size: 16px;
+  font-family: serif;
 }
 
 .hymn-text-input {

@@ -107,7 +107,7 @@ function jumpToPage(bookId, page, cb){
   var hymn = getHymnByPage(book, page);
   if(checkVar(hymn, 'Hymn')){
     currPage = page;
-    $('#number-search-input').val('').blur().attr('placeholder', book.pages[currPage]);
+    $('#number-display').text(book.pages[currPage]);
     $('#page-container').children().transition(
       {scale: 0.75, opacity : 0}, flipTime()/2, 'out', function(){
         this.remove();
@@ -119,30 +119,11 @@ function jumpToPage(bookId, page, cb){
         }); 
       }); 
   }
-  else{
-    $('#number-search-input')
-    .css('text-decoration', 'line-through')
-    .focus();
-    if (cb && cb.fail) cb.fail();
-  }
 }
 
 function jumpToNumber(bookId, number, cb){
   if(checkVar(bookId, "Book ID") && checkVar(bookId, "Hymn number")){
     jumpToPage(bookId, bookshelf[bookId].numbers[number]);
-  }
-}
-
-function clearTextDec(){
-  $('#number-search-input').css('text-decoration','none');
-}
-
-function numberInputEvent(event){
-  if(
-    event.keyCode == 9 || // tab / next
-    event.keyCode == 13 // enter
-  ){
-    jumpToNumber(currBookId, $('#number-search-input').val());
   }
 }
 
@@ -183,7 +164,7 @@ function nextHymn(){
     $('#page-container').append(newPage);
     newPage.transition({scale: 1, opacity: 1}, flipTime(), 'out', function(){
       // Update hymn number
-      $('#number-search-input').val('').blur().attr('placeholder', book.pages[currPage]);
+      $('#number-display').text(book.pages[currPage]);
       navLock = false;
     });
   }
@@ -213,7 +194,7 @@ function prevHymn(){
     newPage.transition({x : '0'}, flipTime(), 'out', function(){
       this.css({'z-index' : ''});
       // Update hymn number
-      $('#number-search-input').val('').blur().attr('placeholder', book.pages[currPage]);
+      $('#number-display').text(book.pages[currPage]);
       // Unlock navigation
       navLock = false;
     });
@@ -243,7 +224,7 @@ function indexSearchbase(bookId) {
           // If it's the first line of the hymn, add the hymn number to indexing.
           var line = '';
           if(j == 0 && k == 0) {
-            line += '[' + number + '] ';
+            line += '#' + number + ' ';
           }
           // Add the odd line to index unit
           line += section[k];
