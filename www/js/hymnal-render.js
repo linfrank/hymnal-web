@@ -40,13 +40,16 @@ function makeMeter(meter){
 
 function makeSection(sect){
   var s = '<div class="hymn-section">';
-  s += '<div class="hymn-verse-number">';
   if (!sect.chorus && sect.stanza > 0){
+    s += '<div class="hymn-verse-number col-sm-1 col-xs-12">';
     s += sect.stanza;
+  } else {
+    s += '<div class="col-sm-1 col-xs-12">';
+    // empty div
   }
   s += '</div>';
   var style = sect.chorus? 'hymn-chorus' : 'hymn-verse';
-  s += '<div class="' + style + '">';
+  s += '<div class="' + style + ' col-sm-11 col-xs-12">';
   for (var i = 0; i < sect.lines.length; i++){
     s += '<p>' + sect.lines[i] + '</p>';
   }
