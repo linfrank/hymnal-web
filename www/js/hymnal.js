@@ -289,7 +289,7 @@ function initHymn(){
   });
 
   // Handle swipe events
-  $("#page-container").swipe({swipeLeft : pageSwipeSimple, swipeRight : pageSwipeSimple, allowPageScroll : "auto"});  
+  $("#page-container").swipe({swipeLeft : pageSwipeSimple, swipeRight : pageSwipeSimple, allowPageScroll : "auto", threshold : 150});  
 
 
   // Load book!
