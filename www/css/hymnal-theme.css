@@ -36,8 +36,8 @@ body {
   float: right;
   margin-top: 5px;
   margin-bottom: 5px;
-  font-size: 16px;
-  font-family: serif;
+  font-size: medium;
+  font-variant: small-caps;
 }
 
 .hymn-text-input {
@@ -93,6 +93,7 @@ body {
 
 .hymn-suggestion-line {
   font-family: serif;
+  font-size: 1.4em;
 }
 .hymn-suggestion-line strong {
   /*background-color: #77773b;*/
