@@ -238,23 +238,31 @@ function indexSearchbase(bookId) {
       var lineSet = {};
       for(var j = 0; j < hymn.song.length; j ++) {
         var section = hymn.song[j].lines;
+        // Because single line is a too small a unit for indexing, we bundle every two lines.
         for(var k = 0; k < section.length;) {
+          // If it's the first line of the hymn, add the hymn number to indexing.
+          var line = '';
+          if(j == 0 && k == 0) {
+            line += '[' + number + '] ';
+          }
           // Add the odd line to index unit
-          var line = section[k];
+          line += section[k];
           k ++;
-          // Add the next even line to unit if it exists
+          // Add the next even line to unit if it exists.
           if(k < section.length) {
             line = line + ' ' + section[k];
             k ++;
           }
-          // Add the next odd line if it's the last line of the section
+          // Add the next odd line if it's the last line of the section.
           if(k == section.length - 1) {
             line = line + ' ' + section[k];
             k ++;
           }
-          if(checkVar(line)) lineSet[line] = null; // add to set; no value
+          // Add line bundle to set.
+          if(checkVar(line)) lineSet[line] = null; // just the key, no value
         }
       }
+      // Index all the two-line bundles.
       for(var key in lineSet){
         searchbase.push({
           line: key,

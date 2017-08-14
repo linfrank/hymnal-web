@@ -48,16 +48,12 @@ body {
 
 .hymn-text-input::-webkit-input-placeholder {
   padding-top: 0.2em;
-  font-family: 'Glyphicons Halflings';
-  font-style: normal;
   font-weight: normal;
   line-height: 1;
 
   -webkit-font-smoothing: antialiased;
 }
 .hymn-text-input::-moz-placeholder {
-  font-family: 'Glyphicons Halflings';
-  font-style: normal;
   font-weight: normal;
   line-height: 1;
 
@@ -65,8 +61,6 @@ body {
 }
 .hymn-text-input:-ms-input-placeholder {
   padding-top: 0.2em;
-  font-family: 'Glyphicons Halflings';
-  font-style: normal;
   font-weight: normal;
   line-height: 1;
 }
@@ -104,7 +98,7 @@ body {
   /*background-color: #77773b;*/
   /*color: #ededdf;*/
   text-decoration: underline;
-  text-decoration-style: double;
+  /*text-decoration-style: wavy;*/
   font-weight: normal;
 }
 
