@@ -102,6 +102,7 @@ body {
 }
 
 .hymn-suggestion-line {
+  font-family: Times, 'Times New Roman', serif;
   font-size: 1.8rem; /* just a tad smaller than hymn verse text */
 }
 .hymn-suggestion-line strong {
