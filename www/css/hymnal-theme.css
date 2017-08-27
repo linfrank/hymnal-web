@@ -2,11 +2,6 @@
 
 html {
   font-size: 10px; /* adjust root font size */
-
-  /* Disable font-boosting in mobile browsers */
-  -webkit-text-size-adjust: none;
-  -moz-text-size-adjust: none;
-  -ms-text-size-adjust: none;
 }
 
 body {
