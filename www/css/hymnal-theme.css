@@ -1,9 +1,19 @@
 /* General */
 
+html {
+  font-size: 10px; /* adjust root font size */
+
+  /* Disable font-boosting in mobile browsers */
+  -webkit-text-size-adjust: none;
+  -moz-text-size-adjust: none;
+  -ms-text-size-adjust: none;
+}
+
 body {
   background-color: #383838;
   color: #242001;
-  font-size: 2em;
+  font-family: Times, 'Times New Roman', serif;
+  font-size: 2rem;
 }
 
 /* Hymn nav components */
@@ -12,7 +22,7 @@ body {
   background-color: #e5e5c7;
   padding-top: 5px;
   padding-bottom: 5px;
-  font-family: sans-serif;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .hymn-btn {
@@ -36,7 +46,7 @@ body {
   float: right;
   margin-top: 5px;
   margin-bottom: 5px;
-  font-size: medium;
+  font-size: 0.8em;
   font-variant: small-caps;
 }
 
@@ -72,7 +82,7 @@ body {
 /* Typeahead components */
 
 .hymn-suggestion-book {
-  font-family: sans-serif;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-variant: small-caps;
   color: #999;
   float: right;
@@ -92,8 +102,7 @@ body {
 }
 
 .hymn-suggestion-line {
-  font-family: serif;
-  font-size: 1.4em;
+  font-size: 1.8rem; /* just a tad smaller than hymn verse text */
 }
 .hymn-suggestion-line strong {
   /*background-color: #77773b;*/
@@ -114,7 +123,7 @@ body {
 /* Greetings page components */
 
 #hymn-greeting {
-  font-size: 300%;
+  font-size: 3em;
   font-variant: small-caps;
   text-align: center;
   margin-top: 3em;
@@ -124,7 +133,6 @@ body {
 
 .hymn-page {
   background-color: #e5e5c7;
-  font-family: serif;
   padding-top: 0.5em;
   padding-bottom: 1em;
   padding-left: 10px;
@@ -147,7 +155,7 @@ body {
 
 .hymn-meter {
   text-align: center;
-  font-size: small;
+  font-size: 0.65em;
   margin-top: 0;
   margin-bottom: 0.75em;
 }
@@ -195,14 +203,14 @@ body {
   display: block;
   max-width: 600px;
   text-align: center;
-  font-size: small;
+  font-size: 0.65em;
   font-style: italic;
   margin: 2em auto 0.5em auto;
 }
 
 .hymn-authorship {
   max-width: 600px;
-  font-size: small;
+  font-size: 0.65em;
   margin: 1.5em auto 0 auto;
 }
 

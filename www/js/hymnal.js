@@ -129,12 +129,12 @@ function jumpToNumber(bookId, number, cb){
 
 function prevPage(){
   if(currPage > 0) return currPage - 1;
-  else return bookshelf[currBookId].pages.length - 1;
+  else return bookshelf[currBookId].pages.length - 1; // this covers title page case (currPage == -1)
 }
 
 function nextPage(){
-  if(currPage < bookshelf[currBookId].pages.length - 1) return currPage + 1;
-  else return 0;
+  if(currPage < bookshelf[currBookId].pages.length - 1 && currPage >= 0) return currPage + 1;
+  else return 0; // title page case (currPage == -1)
 }
 
 function nextHymn(){
@@ -339,8 +339,7 @@ function initHymn(){
           );
 
           currBookId = 'LSM.English';
-          currPage = 0;
-          //jumpToPage(currBookId, currPage);
+          currPage = -1; // title page that goes away after any navigation action
 
         });
     });
