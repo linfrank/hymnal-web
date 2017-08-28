@@ -8,6 +8,26 @@ function get(s){
   return valid(s) ? s : '';
 }
 
+/* Loading progress */
+
+function makeLoadingProgress(message) {
+  var s = '<div id="loading-progress">';
+  s += '<div class="loading-message">' + message + '</div>';
+  s += makeProgressBar();
+  s += '</div>';
+  return s;
+}
+
+function makeProgressBar() {
+  return '<div class="progress-bar-total"><div id="progress-bar" class="progress-bar-current" style="width:0%"></div></div>';
+}
+
+/* Hymnbook Cover */
+
+function makeCoverPage(title) {
+  return '<div id="hymn-cover">' + get(title) + '</div>';
+}
+
 /* Hymn page */
 
 function getCategory(hymn){

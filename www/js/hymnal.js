@@ -29,7 +29,17 @@ function loadHymns(url, df, ff){
   $.ajax({
     url: url,
     timeout: 5000,
-    dataType: 'json'
+    dataType: 'json',
+    xhr: function() {
+      var xhr = new window.XMLHttpRequest();
+      xhr.addEventListener("progress", function(evt) {
+        if (evt.lengthComputable) {
+          var percentComplete = evt.loaded / evt.total * 100;
+          $('#progress-bar').css('width', percentComplete + '%');
+        }
+      }, false);
+      return xhr;
+    }
   })
   .done(function(hymns){
     console.log('Retrieved ' + hymns.length + ' hymns');
@@ -211,6 +221,10 @@ function pageSwipeSimple(event, direction, distance, duration, fingerCount) {
 }
 
 function indexSearchbase(bookId) {
+
+  // Start a indexing progress bar
+  $('.hymn-page').empty().append($(makeLoadingProgress('Indexing hymns')));
+
   var book = bookshelf[bookId];
   for(var number in book.binding){
     var hymnId = book.binding[number];
@@ -253,7 +267,65 @@ function indexSearchbase(bookId) {
         });
       }
     }
+    // Update progress bar
+    $('#progress-bar').css('width', (book.numbers[number] / book.pages.length) + '%');
   }
+}
+
+function setupTypeAhead(data, df) {
+
+  indexSearchbase('LSM.English');
+
+  var hymnbh = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.obj.nonword('line'),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    local: searchbase,
+    limit: 10
+  });
+
+  // kicks off the loading/processing of `local` and `prefetch`
+  hymnbh.initialize();
+
+  $('#text-search-input')
+  .typeahead({
+    hint: false,
+    highlight: true,
+    minLength: 1
+  },
+  {
+    name: 'hymnbh',
+    displayKey: 'line',
+    source: hymnbh.ttAdapter(),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    templates: {
+      header:
+      '<span class="hymn-suggestion-book">' +
+      bookshelf['LSM.English'].title +
+      '</span>',
+      suggestion: Handlebars.compile(
+        '<div class="panel panel-default hymn-suggestion"><div class="panel-body">' +
+        '<span class="hymn-suggestion-line">{{line}}</span>' +
+        '<span class="hymn-suggestion-number">{{number}}</span>' +
+        '</div></div>'
+        )
+    }
+  })
+  .on('typeahead:selected', function(event, data) {
+    jumpToNumber(data.bookId,data.number);
+    $('#text-search-input').blur().typeahead('val', '');
+  });
+
+  // set typeahead suggestion height
+  $('#text-search-input ~ .tt-dropdown-menu')
+  .css(
+    'max-height',
+    ($(window).height() - $('#text-search-input').offset().top - $('#text-search-input').height() - 50) + 'px'
+  );
+
+  if (df) df();
+
+  currBookId = 'LSM.English';
+  currPage = -1; // title page that goes away after any navigation action
 }
 
 function initHymn(){
@@ -289,70 +361,24 @@ function initHymn(){
   });
 
   // Handle swipe events
-  $("#page-container").swipe({swipeLeft : pageSwipeSimple, swipeRight : pageSwipeSimple, allowPageScroll : "auto", threshold : 150});  
-
+  $("#page-container").swipe({swipeLeft : pageSwipeSimple, swipeRight : pageSwipeSimple, allowPageScroll : "auto", threshold : 150});
 
   // Load book!
   loadHymnbook(
     'data/LSM.English.hymnal.json',
-    function(data){
-      loadHymns(
-        'data/LSM.English.hymns.json',
-        function(data){
-
-          indexSearchbase('LSM.English');
-
-          var hymnbh = new Bloodhound({
-            datumTokenizer: Bloodhound.tokenizers.obj.nonword('line'),
-            queryTokenizer: Bloodhound.tokenizers.whitespace,
-            local: searchbase,
-            limit: 10
-          });
-
-          // kicks off the loading/processing of `local` and `prefetch`
-          hymnbh.initialize();
-
-          $('#text-search-input')
-          .typeahead(
-            {
-              hint: false,
-              highlight: true,
-              minLength: 1
-            },
-            {
-              name: 'hymnbh',
-              displayKey: 'line',
-              source: hymnbh.ttAdapter(),
-              queryTokenizer: Bloodhound.tokenizers.whitespace,
-              templates: {
-                header:
-                '<span class="hymn-suggestion-book">' +
-                bookshelf['LSM.English'].title +
-                '</span>',
-                suggestion: Handlebars.compile(
-                  '<div class="panel panel-default hymn-suggestion"><div class="panel-body">' +
-                  '<span class="hymn-suggestion-line">{{line}}</span>' +
-                  '<span class="hymn-suggestion-number">{{number}}</span>' +
-                  '</div></div>'
-                )
-              }
-            })
-          .on('typeahead:selected', function(event, data) {
-            jumpToNumber(data.bookId,data.number);
-            $('#text-search-input').blur().typeahead('val', '');
-          });
-
-          // set typeahead suggestion height
-          $('#text-search-input ~ .tt-dropdown-menu')
-          .css(
-            'max-height',
-            ($(window).height() - $('#text-search-input').offset().top - $('#text-search-input').height() - 50) + 'px'
-          );
-
+    function(hymnbook){
+      // Start loading progress after hymnbook data is retrieved
+      $('.hymn-page').empty().append(
+        $(makeLoadingProgress('Loading ' + hymnbook.pages.length + ' hymns'))
+      );
+      loadHymns('data/LSM.English.hymns.json', function(hymns) {
+        return setupTypeAhead(hymns, function() {
           currBookId = 'LSM.English';
           currPage = -1; // title page that goes away after any navigation action
-
+          // Display hymnbook cover after everything is ready to roll
+          $('.hymn-page').empty().append($(makeCoverPage(hymnbook.title)));
         });
-    });
-
+      });
+    }
+  );
 }
