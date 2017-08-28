@@ -9,6 +9,10 @@ var currPage = -1;
 
 var navLock = false;
 
+function latency() {
+  return new Date().getTime() - hymnpageLatencyStartMs;
+}
+
 function flipTime(){
   var time = $('#page-container').width() * 0.8;
   return Math.max(350, Math.min(850, time));
@@ -25,7 +29,7 @@ function checkVar(x, name){
 }
 
 function loadHymns(url, df, ff){
-  console.log('Retrieving hymns from ' + url);
+  console.log('Retrieving hymns from ' + url + ' [' + latency() + ']');
   $.ajax({
     url: url,
     timeout: 5000,
@@ -42,12 +46,12 @@ function loadHymns(url, df, ff){
     }
   })
   .done(function(hymns){
-    console.log('Retrieved ' + hymns.length + ' hymns');
+    console.log('Retrieved ' + hymns.length + ' hymns' + ' [' + latency() + ']');
     for(var i = 0; i < hymns.length; i++){
       // add to hymn store
       hymnstore[hymns[i].id] = hymns[i];
     }
-    console.log('Loaded ' + hymns.length + ' hymns into hymnstore');
+    console.log('Loaded ' + hymns.length + ' hymns into hymnstore' + ' [' + latency() + ']');
     df(hymns);
   })
   .fail(function(jqXHR, textStatus, errorThrown){
@@ -60,14 +64,14 @@ function loadHymns(url, df, ff){
 }
 
 function loadHymnbook(url, df, ff){
-  console.log('Retrieving hymnbook from ' + url);
+  console.log('Retrieving hymnbook from ' + url + ' [' + latency() + ']');
   $.ajax({
     url: url,
     timeout: 3000,
     dataType: 'json'
   })
   .done(function(hymnal){
-    console.log('Retrieved hymnbook: ' + hymnal.id);
+    console.log('Retrieved hymnbook: ' + hymnal.id + ' [' + latency() + ']');
     bookshelf[hymnal.id] = hymnal;
     hymnal.pages = []; hymnal.pages.length = hymnal.order.length; // page -> number
     hymnal.numbers = {}; // number -> page
@@ -75,7 +79,7 @@ function loadHymnbook(url, df, ff){
       hymnal.pages[i] = hymnal.order[i];
       hymnal.numbers[hymnal.order[i]] = i;
     }
-    console.log('Loaded data for hymnbook: ' + hymnal.id);
+    console.log('Loaded data for hymnbook: ' + hymnal.id + ' [' + latency() + ']');
     if(df) df(hymnal);
   })
   .fail(function(jqXHR, textStatus, errorThrown){
@@ -222,9 +226,6 @@ function pageSwipeSimple(event, direction, distance, duration, fingerCount) {
 
 function indexSearchbase(bookId) {
 
-  // Start a indexing progress bar
-  $('.hymn-page').empty().append($(makeLoadingProgress('Indexing hymns')));
-
   var book = bookshelf[bookId];
   for(var number in book.binding){
     var hymnId = book.binding[number];
@@ -267,14 +268,20 @@ function indexSearchbase(bookId) {
         });
       }
     }
-    // Update progress bar
-    $('#progress-bar').css('width', (book.numbers[number] / book.pages.length) + '%');
   }
 }
 
 function setupTypeAhead(data, df) {
 
+  console.log('Indexing searchbase' + ' [' + latency() + ']');
+
+  // Start spinning the progress bar because we don't have progress updates now
+  $('#loading-progress .loading-message').text('Indexing hymn lyrics');
+  $('#progress-bar').addClass('spinner');
+
   indexSearchbase('LSM.English');
+
+  console.log('Finished indexing searchbase' + ' [' + latency() + ']');
 
   var hymnbh = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.obj.nonword('line'),
@@ -285,6 +292,8 @@ function setupTypeAhead(data, df) {
 
   // kicks off the loading/processing of `local` and `prefetch`
   hymnbh.initialize();
+
+  console.log('Finished initializing bloodhound' + ' [' + latency() + ']');
 
   $('#text-search-input')
   .typeahead({
@@ -323,9 +332,6 @@ function setupTypeAhead(data, df) {
   );
 
   if (df) df();
-
-  currBookId = 'LSM.English';
-  currPage = -1; // title page that goes away after any navigation action
 }
 
 function initHymn(){
@@ -339,7 +345,7 @@ function initHymn(){
   140,
   170)
  document.documentElement.style.fontSize = adjustedFontSize + 'px';
- console.log("Adjusted base font size: " + document.documentElement.style.fontSize);
+ console.log('Adjusted base font size: ' + document.documentElement.style.fontSize + ' [' + latency() + ']');
 
   // Handle key events
   $(window).keydown(function(event){
@@ -375,6 +381,7 @@ function initHymn(){
         return setupTypeAhead(hymns, function() {
           currBookId = 'LSM.English';
           currPage = -1; // title page that goes away after any navigation action
+          console.log('Finished loading' + ' [' + latency() + ']');
           // Display hymnbook cover after everything is ready to roll
           $('.hymn-page').empty().append($(makeCoverPage(hymnbook.title)));
         });
