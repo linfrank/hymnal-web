@@ -258,6 +258,17 @@ function indexSearchbase(bookId) {
 
 function initHymn(){
 
+ // Adjust base (root element) font size for cross-browser typography consistency.
+ // This only work for local fonts since it's called within $(document).ready().
+ var adjustedFontSize = getAdjustedFontSize(
+  20,
+  $(document.body).css('font-family'),
+  'mmmmmmmmmm',
+  140,
+  170)
+ document.documentElement.style.fontSize = adjustedFontSize + 'px';
+ console.log("Adjusted base font size: " + document.documentElement.style.fontSize);
+
   // Handle key events
   $(window).keydown(function(event){
     // enter & tab
