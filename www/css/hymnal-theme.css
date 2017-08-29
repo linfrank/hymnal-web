@@ -11,28 +11,45 @@ body {
   font-family: Times, 'Times New Roman', serif;
 }
 
-/* Loading progress bar */
+/* Cover page components */
 
-#loading-progress {
+.hymnbook-cover {
   text-align: center;
-  margin-top: 12em;
-  font-size: 0.75em;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.hymnbook-title {
+  font-size: 3em;
+  font-variant: small-caps;
+  margin-top: 2.5em;
+  margin-bottom: 0em;
+}
+
+/* Loading progress bar */
+
 .progress-bar-total {
-  display: inline-block;
-  background-color: #f0f0f0;
-  margin-top: 0.5em;
+  margin: 0 auto;
+  background-color: #ededdf;
   width: 50%;
-  border-radius:1em;
 }
 
 .progress-bar-current {
   background-color: #242001;
-  opacity: 0.7;
-  height: 0.3em;
-  border-radius:1em;
+  opacity: 0.6;
+  height: 3px;
+  border-radius: 3px;
+}
+
+.fader {
+  -webkit-animation: fadeOut 1s linear forwards;
+  animation: fadeOut 1s linear forwards;
+}
+
+@-webkit-keyframes fadeOut {
+  100% { opacity: 0; }
+}
+
+@keyframes fadeOut {
+  100% { opacity: 0; }
 }
 
 .spinner {
@@ -85,15 +102,6 @@ body {
     left: 0;
     width: 0%;
   }
-}
-
-/* Cover page components */
-
-#hymn-cover {
-  font-size: 3em;
-  font-variant: small-caps;
-  text-align: center;
-  margin-top: 2.5em;
 }
 
 /* Hymn nav components */

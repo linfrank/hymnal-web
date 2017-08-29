@@ -39,7 +39,7 @@ function loadHymns(url, df, ff){
       xhr.addEventListener("progress", function(evt) {
         if (evt.lengthComputable) {
           var percentComplete = evt.loaded / evt.total * 100;
-          $('#progress-bar').css('width', percentComplete + '%');
+          $('#progress-bar').css('width', (percentComplete / 2) + '%');
         }
       }, false);
       return xhr;
@@ -275,11 +275,11 @@ function setupTypeAhead(data, df) {
 
   console.log('Indexing searchbase' + ' [' + latency() + ']');
 
-  // Start spinning the progress bar because we don't have progress updates now
-  $('#loading-progress .loading-message').text('Indexing hymn lyrics');
-  $('#progress-bar').addClass('spinner');
+  $('#progress-bar').css('width', '50%');
 
   indexSearchbase('LSM.English');
+
+  $('#progress-bar').css('width', '75%');
 
   console.log('Finished indexing searchbase' + ' [' + latency() + ']');
 
@@ -375,15 +375,17 @@ function initHymn(){
     function(hymnbook){
       // Start loading progress after hymnbook data is retrieved
       $('.hymn-page').empty().append(
-        $(makeLoadingProgress('Loading ' + hymnbook.pages.length + ' hymns'))
+        $(makeCoverPage(hymnbook.title))
       );
       loadHymns('data/LSM.English.hymns.json', function(hymns) {
         return setupTypeAhead(hymns, function() {
           currBookId = 'LSM.English';
           currPage = -1; // title page that goes away after any navigation action
           console.log('Finished loading' + ' [' + latency() + ']');
-          // Display hymnbook cover after everything is ready to roll
-          $('.hymn-page').empty().append($(makeCoverPage(hymnbook.title)));
+          // Remove progress bar after everything is ready to go
+          $('#progress-bar')
+          .css('width', '100%').addClass('fader')
+          .parent().addClass('fader');
         });
       });
     }
