@@ -14,7 +14,7 @@ function makeCoverPage(title) {
   var s = '<div class="hymnbook-cover">';
   s += '<div class="hymnbook-title">' + get(title) + '</div>';
   s += '<div class="progress-bar-total">';
-  s += '<div id="progress-bar" class="progress-bar-current" style="width:0%"></div>';
+  s += '<div id="progress-bar" class="progress-bar-current" style="width:5%"></div>';
   s += '</div>';
   s += '</div>';
   return s;

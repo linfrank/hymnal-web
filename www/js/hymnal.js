@@ -39,7 +39,7 @@ function loadHymns(url, df, ff){
       xhr.addEventListener("progress", function(evt) {
         if (evt.lengthComputable) {
           var percentComplete = evt.loaded / evt.total * 100;
-          $('#progress-bar').css('width', (percentComplete / 2) + '%');
+          $('#progress-bar').css('width', Math.max((percentComplete / 2), 5) + '%');
         }
       }, false);
       return xhr;
